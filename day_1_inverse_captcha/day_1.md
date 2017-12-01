@@ -23,6 +23,7 @@ The captcha requires you to review a sequence of digits (your puzzle input) and 
 
 ## What is the solution to your captcha?
 
+[My Solution](https://github.com/meagerfindings/Advent-of-Code-2017/blob/master/day_1_inverse_captcha/day_1.rb)
 
 ## Puzzle input
 
