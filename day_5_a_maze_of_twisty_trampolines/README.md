@@ -37,6 +37,47 @@ In this example, the exit is reached in 5 steps.
 
 **How many steps does it take to reach the exit?**
 
+Steps Taken `356945`
+
+#### My Solution
+
+```
+require 'CSV'
+
+@input_array = []
+@steps = 0
+@jump_destination = 0
+
+def input_data_to_array(source)
+  CSV.foreach(source) do |row_values|
+    @input_array.push(row_values[0].to_i)
+  end
+end
+
+def trampoline_jump
+  attention = @input_array[@jump_destination]
+  result = 'jumping'
+  index = @jump_destination
+  if attention.nil?
+    result = "Steps taken: #{@steps}"
+  else
+    @jump_destination = attention + index
+    @input_array[index] += 1
+    @steps += 1
+  end
+  result
+end
+
+def start_jumping
+  trampoline_jump until trampoline_jump != 'jumping'
+  trampoline_jump
+end
+
+# input_data_to_array('day_5_puzzle_1_test_input.csv')
+input_data_to_array('day_5_puzzle_1_input.csv')
+puts start_jumping
+```
+
 ### Input
 To begin, get your [puzzle input](https://adventofcode.com/2017/day/5/input).
 
@@ -1099,4 +1140,61 @@ To begin, get your [puzzle input](https://adventofcode.com/2017/day/5/input).
 -119
 -857
 -520
+```
+
+## --- Part Two ---
+
+Now, the jumps are even stranger: after each jump, if the offset was three **or more**, instead **decrease** it by 1. Otherwise, increase it by 1 as before.
+
+### Example
+Using this rule with the above example, the process now takes 10 steps, and the offset values after finding the exit are left as 2 3 2 3 -1.
+
+### Task
+**How many steps does it now take to reach the exit?**
+
+Steps: `28372145`.
+
+Use the same input as Puzzle 1.
+
+#### My Solution
+
+```
+require 'CSV'
+
+@input_array = []
+@steps = 0
+@jump_destination = 0
+
+def input_data_to_array(source)
+  CSV.foreach(source) do |row_values|
+    @input_array.push(row_values[0].to_i)
+  end
+end
+
+def trampoline_jump
+  attention = @input_array[@jump_destination]
+  result = 'jumping'
+  index = @jump_destination
+  if attention.nil?
+    result = "Steps taken: #{@steps}"
+  else
+    @jump_destination = attention + index
+    if @jump_destination - index >= 3 || @jump_destination + index <= -3
+      @input_array[index] -= 1
+    else
+      @input_array[index] += 1
+    end
+    @steps += 1
+  end
+  result
+end
+
+def start_jumping
+  trampoline_jump until trampoline_jump != 'jumping'
+  trampoline_jump
+end
+
+# input_data_to_array('day_5_puzzle_1_test_input.csv')
+input_data_to_array('day_5_puzzle_1_input.csv')
+puts start_jumping
 ```

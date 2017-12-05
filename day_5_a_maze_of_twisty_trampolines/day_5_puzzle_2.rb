@@ -18,7 +18,11 @@ def trampoline_jump
     result = "Steps taken: #{@steps}"
   else
     @jump_destination = attention + index
-    @input_array[index] += 1
+    if @jump_destination - index >= 3 || @jump_destination + index <= -3
+      @input_array[index] -= 1
+    else
+      @input_array[index] += 1
+    end
     @steps += 1
   end
   result
