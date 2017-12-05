@@ -42,3 +42,103 @@ In this example, the spreadsheet's checksum would be 8 + 4 + 6 = 18.
 1165	1119	194	280	223	1181	267	898	1108	124	618	1135	817	997	129	227
 404	1757	358	2293	2626	87	613	95	1658	147	75	930	2394	2349	86	385
 ```
+
+---
+
+## --- Part Two ---
+
+"Great work; looks like we're on the right track after all. Here's a star for your effort." However, the program seems a little worried. Can programs be worried?
+
+"Based on what we're seeing, it looks like all the User wanted is some information about the evenly divisible values in the spreadsheet. Unfortunately, none of us are equipped for that kind of calculation - most of us specialize in bitwise operations."
+
+It sounds like the goal is to find the only two numbers in each row where one evenly divides the other - that is, where the result of the division operation is a whole number. They would like you to find those numbers on each line, divide them, and add up each line's result.
+
+For example, given the following spreadsheet:
+
+```
+5 9 2 8
+9 4 7 3
+3 8 6 5
+
+    In the first row, the only two numbers that evenly divide are 8 and 2; the result of this division is 4.
+    In the second row, the two numbers are 9 and 3; the result is 3.
+    In the third row, the result is 2.
+```
+
+In this example, the sum of the results would be `4 + 3 + 2 = 9`.
+
+### Task
+**What is the sum of each row's result in your puzzle input?**
+
+Checksum: `121`
+
+Use the same input as puzzle 1.
+
+### My Solution
+
+```
+require 'pp'
+require 'CSV'
+
+row = 0
+input_hash = {}
+
+# CSV.foreach("day2_puzzle_2_test_input.csv") do |row_values|
+#   temp_string = row_values[0].to_s
+#   # temp_string.gsub!(/\t/, ',')/
+#
+#   input_hash[row] = []
+#   entry_string = ''
+#   temp_string.each_byte do |char|
+#     if char.chr == ' '
+#       input_hash[row].push(entry_string.to_i)
+#       entry_string = ''
+#     else
+#       entry_string += char.chr
+#     end
+#   end
+#   input_hash[row].push(entry_string.to_i)
+#   row += 1
+# end
+
+CSV.foreach("day2puzzle1input.csv") do |row_values|
+  temp_string = row_values[0].to_s
+  temp_string.gsub!(/\t/, ',')
+
+  input_hash[row] = []
+  entry_string = ''
+  temp_string.each_byte do |char|
+    if char.chr == ','
+      input_hash[row].push(entry_string.to_i)
+      entry_string = ''
+    else
+      entry_string += char.chr
+    end
+  end
+  input_hash[row].push(entry_string.to_i)
+  row += 1
+end
+
+checksum = 0
+
+input_hash.each do |_key, row_values|
+  result = 0
+  row_values.each do |entry|
+    row_values.each do |inner_entry|
+      next if entry == inner_entry
+      pp "Entry #{entry}"
+      pp "Inner_Entry #{inner_entry}"
+      temp_result = entry / inner_entry.to_f
+      pp "Integer test: #{temp_result.zero?}"
+      result = temp_result if temp_result % 1 == 0
+      pp "temp result: #{temp_result}"
+      next if temp_result.zero?
+    end
+  end
+  checksum += result
+  pp "Checksum: #{checksum}"
+end
+
+# pp input_hash
+puts checksum
+```
