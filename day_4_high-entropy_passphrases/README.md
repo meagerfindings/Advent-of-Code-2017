@@ -16,7 +16,7 @@ For example:
 ### Task
 The system's full passphrase list is available as your puzzle input. **How many passphrases are valid?**
 
-`"Valid Passwords: 477"`
+`Valid Passwords: 477`
 
 #### Input
 To begin, get your puzzle [input](https://adventofcode.com/2017/day/4/input):
@@ -594,7 +594,7 @@ For added security, yet another system policy has been put in place. Now, a vali
 For example:
 
 ```
-abcde fghij is a valid passphrase.
+    abcde fghij is a valid passphrase.
     abcde xyz ecdab is not valid - the letters from the third word can be rearranged to form the first word.
     a ab abc abd abf abj is a valid passphrase, because all letters need to be used when forming another word.
     iiii oiii ooii oooi oooo is valid.
@@ -604,4 +604,68 @@ abcde fghij is a valid passphrase.
 ### Task
 Under this new system policy, **how many passphrases are valid?** _This puzzle uses the same input as puzzle 1._
 
+Valid passwords: `167`
+
 ### My Solution
+
+```
+require 'pp'
+require 'CSV'
+
+@input_hash = {}
+
+def input_data_to_hash
+  counter = 0
+  CSV.foreach('day_4_puzzle_1_input.csv') do |row_values|
+    temp_string = row_values[0].to_s
+    @input_hash["password#{counter}"] = { password: temp_string,
+                                          pass_array: [],
+                                          high_entropy: false }
+    counter += 1
+  end
+end
+
+def test_data
+  pp '!!!TESTING!!!'
+  counter = 0
+  CSV.foreach('day_4_puzzle_test_cases.csv') do |row_values|
+    temp_string = row_values[0].to_s
+    @input_hash["password#{counter}"] = { password: temp_string,
+                                          pass_array: [],
+                                          high_entropy: false }
+    counter += 1
+  end
+end
+
+def create_arrays_from_passwords
+  @input_hash.each_value do |pass|
+    entry_string = ''
+    pass[:password].each_byte do |char|
+      if char.chr == ' '
+        sorted_string = entry_string.chars.sort(&:casecmp).join
+        pass[:pass_array].push(sorted_string)
+        entry_string = ''
+      else
+        entry_string += char.chr
+      end
+    end
+    pass[:pass_array].push(entry_string.chars.sort(&:casecmp).join)
+  end
+end
+
+def evaluate_passwords
+  valid_passwords = 0
+  @input_hash.each_value do |pass|
+    if pass[:pass_array].uniq.length == pass[:pass_array].length
+      pass[:high_entropy] = true
+      valid_passwords += 1
+    end
+  end
+  valid_passwords
+end
+
+# test_data
+input_data_to_hash
+create_arrays_from_passwords
+pp "Valid Passwords: #{evaluate_passwords}"
+```
