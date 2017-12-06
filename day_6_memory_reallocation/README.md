@@ -89,3 +89,75 @@ pp "Total Cycles: #{reallocate_all_the_things(input_array)}"
 ```
 
 ---
+
+## --- Part Two ---
+
+Out of curiosity, the debugger would also like to know the size of the loop: starting from a state that has already been seen, how many block redistribution cycles must be performed before that same state is seen again?
+
+In the example above, `2 4 1 2` is seen again after four cycles, and so the answer in that example would be 4.
+
+### Task **How many cycles** are in the infinite loop that arises from the configuration in your puzzle input?
+
+Loop size: `1695`.
+
+_Input is the same as puzzle 1._
+
+### My Solution
+
+```
+require 'pp'
+
+test_array = [0, 2, 7, 0]
+input_array = [0,	5, 10, 0, 11, 14, 13, 4, 11, 8, 8, 7, 1, 4, 12, 11]
+@cycle_history = []
+@cycles = 0
+@match = false
+
+def find_largest(target)
+  sorted_array = target.sort
+  sorted_array[-1, 1][0]
+end
+
+def convert_blocks_to_string(target)
+  converted_string = ''
+  target.each do |x|
+    converted_string += x.to_s
+  end
+  converted_string
+end
+
+def reallocate_cycle(target)
+  largest = find_largest(target)
+  index = target.index(largest)
+  target[index] = 0
+  until largest.zero?
+    largest -= 1
+    index += 1
+    index = 0 if index >= target.length
+    target[index] += 1
+  end
+  pp "Cycle blocks: #{target}"
+  cycle_record = convert_blocks_to_string(target)
+  @match = true if @cycle_history.include? cycle_record
+  @cycle_history.push(cycle_record)
+  pp "Cycle: #{@cycles += 1}"
+end
+
+def reallocate_all_the_things(target)
+  reallocate_cycle(target) until @match == true
+  pp "Loop size: #{calc_loop_size}"
+  @cycles
+end
+
+def calc_loop_size
+  loop_end = @cycle_history.length - 1
+  target_value = @cycle_history[-1, 1][0]
+  loop_begin = @cycle_history.index(target_value)
+  loop_size = loop_end - loop_begin
+  loop_size
+end
+
+# pp "Total Cycles: #{reallocate_all_the_things(test_array)}"
+pp "Total Cycles: #{reallocate_all_the_things(input_array)}"
+
+```
