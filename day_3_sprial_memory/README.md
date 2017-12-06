@@ -28,7 +28,7 @@ Each square on the grid is allocated in a spiral pattern starting at a location 
 110 73  74  75  76  77  78  79  80  81  82  ||
 111 112 113 114 115 116 117 118 119 120 121 122
 ```
-
+1 8 23 46 77 116
 `101 65 37 17 5 1 9 26 49 81 122`
 `91  57 31 13 3 1 7 21 43 73 111`
 
