@@ -12,25 +12,7 @@ Each square on the grid is allocated in a spiral pattern starting at a location 
 19   6   1   2  11
 20   7   8   9  10
 21  22  23---> ...
-
 ```
-
-```
-101 100 99  98  97  96  95  94  93  92  91  ||
-102 65  64  63  62  61  60  59  58  57  90  ||
-103 66  37  36  35  34  33  32  31  56  89  ||
-104 67  38  17  16  15  14  13  30  55  88  ||
-105 68  39  18   5   4   3  12  30  54  87  ||
-106 69  40  19   6   1   2  11  29  53  86  ||
-107 70  41  20   7   8   9  10  28  52  85  ||
-108 71  42  21  22  23  25  26  27  51  84  ||
-109 72  43  44  45  46  47  48  49  50  83  ||
-110 73  74  75  76  77  78  79  80  81  82  ||
-111 112 113 114 115 116 117 118 119 120 121 122
-```
-1 8 23 46 77 116
-`101 65 37 17 5 1 9 26 49 81 122`
-`91  57 31 13 3 1 7 21 43 73 111`
 
 While this is very space-efficient (no squares are skipped), requested data must be carried back to square 1 (the location of the only access port for this memory system) by programs that can only move up, down, left, or right. They always take the shortest path: the Manhattan Distance between the location of the data and square 1.
 
@@ -41,9 +23,101 @@ For example:
     Data from square 12 is carried 3 steps, such as: down, left, left.
     Data from square 23 is carried only 2 steps: up twice.
     Data from square 1024 must be carried 31 steps.
-
 ```
 
-### How many steps are required to carry the data from the square identified in your puzzle input all the way to the access port?
+### Task
+**How many steps are required to carry the data from the square identified in your puzzle input all the way to the access port?**
 
-*Your puzzle input is `289326`.*
+Steps taken: `419`
+
+_Your puzzle input is `289326`._
+
+#### My Solution
+
+```
+require 'pp'
+
+input = ARGV[0].to_i
+
+@x = 0
+@y = 0
+@n = 1
+@rotation_number = 1
+
+@spiral_hash = { @n => [@x, @y] }
+
+def right
+  @spiral_hash[@n += 1] = [@x += 1, @y]
+end
+
+def up
+  @spiral_hash[@n += 1] = [@x, @y += 1]
+end
+
+def left
+  @spiral_hash[@n += 1] = [@x -= 1, @y]
+end
+
+def down
+  @spiral_hash[@n += 1] = [@x, @y -= 1]
+end
+
+def rotate
+  if @rotation_number == 1
+    right
+    up
+  else
+    right_up_num = 2 * @rotation_number - 1
+    right_up_num.times { right }
+    right_up_num.times { up }
+  end
+  left_down_num = 2 * @rotation_number
+  left_down_num.times { left }
+  left_down_num.times { down }
+  @rotation_number += 1
+end
+
+def create_spiral(input)
+  rotate until @n >= input
+end
+
+def calculate_steps(input)
+  steps = 0
+  @spiral_hash[input].each do |x|
+    steps += x.abs
+  end
+  steps
+end
+
+create_spiral(input)
+# pp @spiral_hash
+pp "Steps taken: #{calculate_steps(input)}"
+```
+---
+
+## --- Part Two ---
+
+As a stress test on the system, the programs here clear the grid and then store the value `1` in square `1`. Then, in the same allocation order as shown above, they store the sum of the values in all adjacent squares, including diagonals.
+
+So, the first few squares' values are chosen as follows:
+
+    Square `1` starts with the value `1`.
+    Square `2` has only one adjacent filled square (with value 1), so it also stores `1`.
+    Square `3` has both of the above squares as neighbors and stores the sum of their values, `2`.
+    Square `4` has all three of the aforementioned squares as neighbors and stores the sum of their values, `4`.
+    Square `5` only has the first and fourth squares as neighbors, so it gets the value `5`.
+
+Once a square is written, its value does not change. Therefore, the first few squares would receive the following values:
+
+```
+147  142  133  122   59
+304    5    4    2   57
+330   10    1    1   54
+351   11   23   25   26
+362  747  806--->   ...
+```
+
+### Task
+What is the **first value written** that is **larger** than your puzzle input?
+
+_Your puzzle input is still_ `289326`.
