@@ -26,17 +26,14 @@ def down
 end
 
 def rotate
-  if @rotation_number == 1
-    right
-    up
-  else
-    right_up_num = 2 * @rotation_number - 1
-    right_up_num.times { right }
-    right_up_num.times { up }
-  end
+  right_up_num = 2 * @rotation_number - 1
+  right_up_num.times { right }
+  right_up_num.times { up }
+
   left_down_num = 2 * @rotation_number
   left_down_num.times { left }
   left_down_num.times { down }
+
   @rotation_number += 1
 end
 
