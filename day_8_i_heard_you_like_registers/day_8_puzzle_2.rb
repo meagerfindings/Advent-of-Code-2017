@@ -1,5 +1,7 @@
 require 'CSV'
 
+@largest_value_while_running = 0
+
 def import_test_data(target)
   input_hash = {}
   n = 0
@@ -32,6 +34,7 @@ def instruction(target, direction, steps, register_to_check, equality, register_
     else
       @register_hash[target] += steps
     end
+    find_largest_value_while_running(@register_hash[target])
   end
 end
 
@@ -46,16 +49,12 @@ def run_instructions(source)
   end
 end
 
-def find_largest_value
-  largest = 0
-  @register_hash.each do |_key, value|
-    largest = value if value > largest
-  end
-  largest
+def find_largest_value_while_running(value)
+  @largest_value_while_running = value if value > @largest_value_while_running
 end
 
 # instruction_hash = import_test_data('day_8_puzzle_1_test_input.csv')
 instruction_hash = import_test_data('day_8_puzzle_1_input.csv')
 @register_hash = create_registers(instruction_hash)
 run_instructions(instruction_hash)
-puts "Largest value in a register: #{find_largest_value}"
+puts "Largest value during process: #{@largest_value_while_running}"
